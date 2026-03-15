@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0a0a0f">
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self';
+             script-src 'self';
+             style-src 'self' https://fonts.googleapis.com;
+             font-src https://fonts.gstatic.com;
+             img-src 'self' data:;
+             connect-src 'none';
+             object-src 'none';
+             base-uri 'self';
+             form-action 'none';">
+  <title>PIXEL SUMMIT — Don't Look Down</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+  <!-- Stars background -->
+  <canvas id="stars-canvas" aria-hidden="true"></canvas>
+
+  <!-- ===== TITLE SCREEN ===== -->
+  <div class="screen active" id="title-screen" role="main" aria-label="Title Screen">
+    <div class="pixel-title" aria-label="Pixel Summit">PIXEL SUMMIT</div>
+    <div class="pixel-sub" aria-live="polite">▼ DON'T LOOK DOWN ▼</div>
+    <div class="title-art" aria-hidden="true">
+    /\  /\  /\  /\
+   /##\/##\/##\/##\
+  /####\/####\/####\
+ /######\/######\
+/########\/######\
+    </div>
+    <button class="btn" id="btn-start" aria-label="Start Game">▶ START GAME</button>
+    <button class="btn btn-secondary" id="btn-howto" aria-label="How to play">HOW TO PLAY</button>
+    <div class="tagline" aria-label="Inspired by suffering and perseverance">
+      inspired by suffering &amp; perseverance
+    </div>
+  </div>
+
+  <!-- ===== HOW TO PLAY SCREEN ===== -->
+  <div class="screen" id="howto-screen" role="dialog" aria-label="How to Play">
+    <div class="screen-title">— HOW TO PLAY —</div>
+    <div class="howto-grid">
+      <div class="howto-card">
+        <div class="howto-icon">🕹️</div>
+        <div class="howto-heading">MOVE</div>
+        <div class="howto-text">Tap LEFT / RIGHT buttons or use A / D keys</div>
+      </div>
+      <div class="howto-card">
+        <div class="howto-icon">⬆️</div>
+        <div class="howto-heading">JUMP</div>
+        <div class="howto-text">Tap JUMP button, W, ↑, or SPACE. Double jump allowed!</div>
+      </div>
+      <div class="howto-card">
+        <div class="howto-icon">🏔️</div>
+        <div class="howto-heading">GOAL</div>
+        <div class="howto-text">Reach the GOLD FLAG at the top of each level</div>
+      </div>
+      <div class="howto-card">
+        <div class="howto-icon">💀</div>
+        <div class="howto-heading">FALL</div>
+        <div class="howto-text">Fall too far = restart. The mountain won't apologize.</div>
+      </div>
+      <div class="howto-card">
+        <div class="howto-icon">🧊</div>
+        <div class="howto-heading">CRUMBLE</div>
+        <div class="howto-text">Orange platforms break apart. Don't linger.</div>
+      </div>
+      <div class="howto-card">
+        <div class="howto-icon">🌀</div>
+        <div class="howto-heading">BOUNCE</div>
+        <div class="howto-text">Teal pads launch you sky-high. Use wisely.</div>
+      </div>
+    </div>
+    <button class="btn btn-secondary" id="btn-howto-back">◀ BACK</button>
+  </div>
+
+  <!-- ===== LEVEL SELECT ===== -->
+  <div class="screen" id="level-select" role="main" aria-label="Level Select">
+    <div class="screen-title">— SELECT LEVEL —</div>
+    <div class="level-grid" id="level-grid" role="list" aria-label="Level list"></div>
+    <button class="btn btn-secondary" id="btn-lvl-back">◀ BACK</button>
+  </div>
+
+  <!-- ===== GAME SCREEN ===== -->
+  <div class="screen" id="game-screen" role="main" aria-label="Game">
+    <canvas id="game-canvas" aria-label="Game canvas"></canvas>
+
+    <!-- Mobile touch controls -->
+    <div id="touch-controls" aria-label="Touch controls">
+      <div id="dpad">
+        <button class="dpad-btn" id="btn-left" aria-label="Move left">◀</button>
+        <button class="dpad-btn" id="btn-right" aria-label="Move right">▶</button>
+      </div>
+      <div id="action-btns">
+        <button class="action-btn" id="btn-jump" aria-label="Jump">▲<span>JUMP</span></button>
+        <button class="action-btn" id="btn-restart-touch" aria-label="Restart">↺<span>RETRY</span></button>
+      </div>
+    </div>
+
+    <!-- HUD overlay (top bar on mobile) -->
+    <div id="hud" role="status" aria-live="polite">
+      <div class="hud-item">
+        <span class="hud-label">LVL</span>
+        <span class="hud-val" id="hud-level">1</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">HEIGHT</span>
+        <span class="hud-val" id="hud-height">0m</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">BEST</span>
+        <span class="hud-val" id="hud-best">0m</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">FALLS</span>
+        <span class="hud-val" id="hud-falls">0</span>
+      </div>
+      <div class="hud-progress-wrap">
+        <div class="hud-bar-bg">
+          <div class="hud-bar-fill" id="hud-progress" style="width:0%"></div>
+        </div>
+      </div>
+      <button class="hud-quit-btn" id="btn-hud-quit" aria-label="Quit to menu">✕</button>
+    </div>
+  </div>
+
+  <!-- ===== DEATH SCREEN ===== -->
+  <div class="screen" id="death-screen" role="alertdialog" aria-label="You fell">
+    <div class="death-msg" aria-live="assertive">YOU FELL.</div>
+    <div class="death-quote" id="death-quote" aria-live="polite"></div>
+    <div class="death-stats" id="death-stats" aria-live="polite"></div>
+    <div class="btn-row">
+      <button class="btn" id="btn-retry">↺ TRY AGAIN</button>
+      <button class="btn btn-secondary" id="btn-death-levels">⊞ LEVELS</button>
+    </div>
+  </div>
+
+  <!-- ===== WIN SCREEN ===== -->
+  <div class="screen" id="win-screen" role="alertdialog" aria-label="Level complete">
+    <div class="win-msg" id="win-msg" aria-live="assertive">LEVEL CLEAR!</div>
+    <div class="win-stats" id="win-stats" aria-live="polite"></div>
+    <div class="win-stars" id="win-stars" aria-live="polite">★★★</div>
+    <div class="btn-row">
+      <button class="btn" id="btn-next">▶ NEXT LEVEL</button>
+      <button class="btn btn-secondary" id="btn-win-levels">⊞ LEVELS</button>
+    </div>
+  </div>
+
+  <script src="assets/game.js"></script>
+</body>
+</html>
